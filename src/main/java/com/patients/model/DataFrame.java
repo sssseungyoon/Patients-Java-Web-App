@@ -1,10 +1,9 @@
 package com.patients.model;
 
 import java.util.ArrayList;
-import org.apache.commons.csv.CSVRecord;
 
 public class DataFrame {
-    ArrayList<Column> columns;
+    private ArrayList<Column> columns;
 
     public DataFrame() {
         columns = new ArrayList<>();
@@ -34,6 +33,15 @@ public class DataFrame {
         return result;
     }
 
+    public ArrayList<String> getColumn(String columnName) {
+
+        for (Column c : this.columns) {
+            if (c.getName().equals(columnName))
+                return c.getRows();
+        }
+        return null;
+    }
+
     public int getRowCount() {
         // have to handle the case when the arraylist is empty
         if (this.columns.isEmpty())
@@ -48,7 +56,7 @@ public class DataFrame {
             return "";
 
         for (Column c : this.columns) {
-            if (c.name == columnName) {
+            if (c.getName().equals(columnName)) {
                 return c.getRowValue(row);
             }
         }
@@ -57,7 +65,7 @@ public class DataFrame {
 
     public void putValue(String columnName, int row, String value) {
         for (Column c : this.columns) {
-            if (c.name == columnName) {
+            if (c.getName().equals(columnName)) {
                 if (row < this.getRowCount())
                     c.putRowValue(row, value);
             }
@@ -69,22 +77,27 @@ public class DataFrame {
     // i will make this method private to keep the invariance
     private void addValue(String columnName, String value) {
         for (Column c : this.columns) {
-            if (c.name == columnName) {
+            if (c.getName().equals(columnName)) {
                 c.addRowValue(value);
             }
         }
     }
 
-    public void addValues(CSVRecord csvRecord) {
+    public void addValues(String[] values) {
         for (int i = 0; i < columns.size(); i++) {
-            String value = csvRecord.get(i);
-            String columnName = this.columns.get(i).name;
-            this.addValue(columnName, value);
+            String columnName = this.columns.get(i).getName();
+            this.addValue(columnName, values[i]);
         }
     }
 
-    public void addNames(CSVRecord csvRecord) {
-        for (String colName : csvRecord) {
+    public void deleteRow(int index) {
+        for (Column c : this.columns) {
+            c.removeRowValue(index);
+        }
+    }
+
+    public void addNames(String[] names) {
+        for (String colName : names) {
             Column col = new Column(colName);
             this.addColumn(col);
         }
@@ -92,7 +105,8 @@ public class DataFrame {
 
     @Override
     public String toString() {
-        if (this.columns.isEmpty()) return "(empty dataframe)";
+        if (this.columns.isEmpty())
+            return "(empty dataframe)";
 
         // calculate column widths
         int[] widths = new int[columns.size()];
@@ -126,7 +140,8 @@ public class DataFrame {
 
     private String buildSeparator(int[] widths) {
         StringBuilder sb = new StringBuilder("+");
-        for (int w : widths) sb.append("-".repeat(w + 2)).append("+");
+        for (int w : widths)
+            sb.append("-".repeat(w + 2)).append("+");
         return sb.append("\n").toString();
     }
 

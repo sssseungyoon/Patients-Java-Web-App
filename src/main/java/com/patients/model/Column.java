@@ -3,8 +3,8 @@ package com.patients.model;
 import java.util.ArrayList;
 
 public class Column {
-    String name;
-    ArrayList<String> rows;
+    private String name;
+    private ArrayList<String> rows;
 
     public Column(String name) {
         this.name = name;
@@ -19,6 +19,10 @@ public class Column {
         return this.rows.size();
     }
 
+    public ArrayList<String> getRows() {
+        return this.rows;
+    }
+
     public String getRowValue(int index) {
         return this.rows.get(index);
     }
@@ -29,5 +33,9 @@ public class Column {
 
     public void putRowValue(int index, String value) {
         this.rows.set(index, value);
+    }
+
+    public void removeRowValue(int index) {
+        this.rows.remove(index);
     }
 }

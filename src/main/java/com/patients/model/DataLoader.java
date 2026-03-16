@@ -20,19 +20,21 @@ public class DataLoader {
     // first create columns for the first row
     // implement add rows for all the cols -> need a method
 
-    public DataFrame returnFilledDataFrame() throws IOException {
+    public DataFrame returnFilledDataFrame() {
         try (Reader reader = new FileReader(fileName);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {
 
             Boolean firstRow = true;
             for (CSVRecord csvRecord : csvParser) {
                 if (firstRow) {
-                    dataFrame.addNames(csvRecord);
+                    dataFrame.addNames(csvRecord.toList().toArray(new String[0]));
                     firstRow = false;
                 } else {
-                    dataFrame.addValues(csvRecord);
+                    dataFrame.addValues(csvRecord.toList().toArray(new String[0]));
                 }
             }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
         }
         return this.dataFrame;
     }
